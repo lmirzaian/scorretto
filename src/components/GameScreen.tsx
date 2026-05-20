@@ -19,7 +19,26 @@ export function GameScreen(props: Props) {
   const avg = laughter.length ? (laughter.reduce((a,b)=>a+b,0)/laughter.length).toFixed(1) : '-';
   const notes = useMemo(()=>props.roundHistory.filter(r=>r.feedback?.notes?.trim()),[props.roundHistory]);
 
-  if (props.gamePhase === 'testReport') return <main className='container'><section className='card'><h2>Report test serata</h2><p>Stanza: {props.roomName || 'Senza nome'}</p><p>Round: {props.roundHistory.length}</p><p>Risata media: {avg} / 5 su {laughter.length} round valutati</p><p>Punteggio: {props.teamAName} {props.teamAScore} - {props.teamBScore} {props.teamBName}</p><p>Pacchetti attivi: {props.activePackIds.join(', ') || '-'}</p><p>Creata il: {new Date(props.createdAt).toLocaleString()}</p><h3>Note raccolte</h3>{notes.map(r=><p key={r.roundNumber}>Round {r.roundNumber}: {r.feedback?.notes}</p>)}<button className='secondary' onClick={props.onBackToGame}>Torna al gioco</button><button className='secondary' onClick={props.onClearFeedback}>Cancella feedback serata</button></section></main>;
+  const reportPayload = {
+    roomName: props.roomName,
+    rounds: props.roundHistory.length,
+    avgLaughter: avg,
+    notes: notes.map((r) => ({ round: r.roundNumber, note: r.feedback?.notes })),
+    history: props.roundHistory,
+  };
+  const copyReport = async () => {
+    const txt = `Report test serata\nStanza: ${props.roomName}\nRound: ${props.roundHistory.length}\nRisata media: ${avg}\nNote: ${notes.map((n)=>`#${n.roundNumber} ${n.feedback?.notes}`).join(' | ')}`;
+    await navigator.clipboard.writeText(txt);
+  };
+  const exportJson = () => {
+    const blob = new Blob([JSON.stringify(reportPayload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `report-test-serata-${Date.now()}.json`; a.click(); URL.revokeObjectURL(url);
+  };
+
+
+  if (props.gamePhase === 'testReport') return <main className='container'><section className='card'><h2>Report test serata</h2><p>Stanza: {props.roomName || 'Senza nome'}</p><p>Round: {props.roundHistory.length}</p><p>Risata media: {avg} / 5 su {laughter.length} round valutati</p><p>Punteggio: {props.teamAName} {props.teamAScore} - {props.teamBScore} {props.teamBName}</p><p>Pacchetti attivi: {props.activePackIds.join(', ') || '-'}</p><p>Creata il: {new Date(props.createdAt).toLocaleString()}</p><h3>Note raccolte</h3>{notes.map(r=><p key={r.roundNumber}>Round {r.roundNumber}: {r.feedback?.notes}</p>)}<button className='secondary' onClick={exportJson}>Esporta JSON</button><button className='secondary' onClick={copyReport}>Copia report testuale</button><button className='secondary' onClick={props.onBackToGame}>Torna al gioco</button><button className='secondary' onClick={props.onClearFeedback}>Cancella feedback serata</button></section></main>;
 
   return <main className="container">
     <Scoreboard {...props} />
