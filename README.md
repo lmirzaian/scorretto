@@ -1,81 +1,48 @@
 # Non si può più dire niente
 
-Party game pass-and-play a squadre, pensato per serate tra amici: ironia, improvvisazione e round veloci.
+## Sprint 5
 
-## Sprint 3: pacchetti categorie attivabili
+Sprint 5 introduce un **motore round avanzato** con distinzione netta fra:
+- **Gioco Classico** (`kind: classic`)
+- **Round Contesto** (`kind: context`)
 
-In questo sprint il database categorie è stato ristrutturato in **pacchetti (deck)** selezionabili prima della partita, senza toccare la logica principale già funzionante (setup, 2 squadre, timer, punti, carte speciali, vittoria).
+### Novità principali
+- Modello round type esteso (`description`, `setupText`, istruzioni attivo/avversario, condizioni, timer suggerito, flag interruzione/difesa/furto).
+- Macchina a stati round: `ready → extracted → performance → opponentIntervention → defense → judging → roundSummary` (con percorso ridotto per il classico).
+- UI round con: fase corrente, microcopy teatrale, istruzioni attore/avversario, avanzamento fase.
+- Sezione dedicata **Gioco Classico** con timer 10s e supporto alternanza al tavolo.
+- Sezione dedicata **Round Contesto** per i contesti: interrogazione, conferenza stampa, talk show, processo, riunione aziendale, tavolo tecnico istituzionale, cena di famiglia.
+- Ruolo squadra attiva esplicito e alternanza A/B ad ogni round.
+- Carte speciali durante il round: massimo 1 uso per squadra/round, scarto immediato e registrazione nello storico.
+- Distinzione carte: **Jolly** e **Aggravante**.
+- Giudizio del tavolo con: punto A/B, round nullo, bonus +1 A/B.
+- Storico round migliorato e collassabile con metadati completi del round.
+- Persistenza partita con `localStorage`.
 
-### Pacchetti implementati
+## Regole Sprint 5 (sintesi)
+- L’app guida i turni e il ritmo scenico.
+- Nessun backend, multiplayer online, login, pagamenti, database remoto.
+- Contenuti hardcoded non offensivi: la battuta resta responsabilità del tavolo.
 
-1. **Province italiane** (default attivo)
-2. **Religioni** (default disattivo, pacchetto delicato)
-3. **Famiglia** (default attivo)
-4. **Italia** (default attivo)
-5. **Professioni** (default attivo)
-
-## Nuova selezione pacchetti nel setup
-
-Nella schermata “Nuova partita” trovi la sezione **Pacchetti categorie** con:
-- nome;
-- descrizione;
-- numero categorie;
-- tono (`light` / `medium` / `hot`);
-- warning (se presente);
-- toggle attivo/disattivo.
-
-Regole:
-- i pacchetti con `enabledByDefault: true` partono già selezionati;
-- **Religioni** parte disattivato;
-- se attivi un pacchetto con warning, appare il box:
-  - “Patto del tavolo: questo pacchetto può essere delicato. Usatelo solo se tutti sono d’accordo.”
-
-## Nota sul pacchetto delicato “Religioni”
-
-Il pacchetto è pensato per un contesto adulto tra amici, ma nell’MVP contiene solo **etichette giocabili neutrali o contestuali** (nessun insulto hardcoded, slur o attacco diretto).
-
-Warning mostrato nel setup:
-> Pacchetto delicato: usatelo solo se il tavolo è d’accordo. La battuta resta responsabilità del tavolo.
-
-## Estrazione categorie
-
-Durante la partita, la categoria viene pescata **solo dai pacchetti attivi**.
-
-- Se nessun pacchetto è attivo, non puoi iniziare e compare:
-  - `Seleziona almeno un pacchetto categorie.`
-- Nella card round viene mostrato anche il **pacchetto di provenienza** della categoria.
-
-## Sensitivity (base dati pronta per sprint futuri)
-
-Ogni `CategoryItem` include `sensitivity` (`low | medium | high`) per supportare in futuro filtri di correttezza (es. Aperitivo/Cena/Nessun testimone).
-
-In Sprint 3 non è ancora attivo il filtro automatico.
+## Test manuale Sprint 5
+1. Avviare app.
+2. Creare o riprendere stanza offline.
+3. Inserire giocatori.
+4. Iniziare partita.
+5. Estrarre un round Gioco Classico.
+6. Verificare timer e pulsanti punto.
+7. Estrarre un round Contesto.
+8. Verificare fasi performance/intervento/difesa/giudizio.
+9. Usare una carta Jolly.
+10. Usare una carta Aggravante.
+11. Assegnare punto e bonus.
+12. Verificare storico round.
+13. Ricaricare pagina e verificare salvataggio.
+14. Arrivare alla vittoria finale.
 
 ## Avvio app
-
-1. Installa dipendenze:
-   ```bash
-   npm install
-   ```
-2. Avvia in sviluppo:
-   ```bash
-   npm run dev
-   ```
-3. Build produzione:
-   ```bash
-   npm run build
-   ```
-
-## Test manuale Sprint 3
-
-1. Avviare app.
-2. Andare su Nuova partita.
-3. Verificare che **Famiglia, Italia, Professioni, Province italiane** siano attivi di default.
-4. Verificare che **Religioni** sia disattivato di default.
-5. Attivare/disattivare pacchetti.
-6. Iniziare partita.
-7. Estrarre più round.
-8. Verificare che le categorie escano solo dai pacchetti attivi.
-9. Verificare che venga mostrato il nome del pacchetto della categoria.
-10. Verificare che con nessun pacchetto attivo non si possa iniziare.
-11. Verificare che punteggio, timer, carte speciali e vittoria funzionino ancora.
+```bash
+npm install
+npm run dev
+npm run build
+```
