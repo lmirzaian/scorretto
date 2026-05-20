@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { categoryPacks, defaultEnabledPackIds } from '../data/categoryPacks';
+import { roundTypes } from '../data/roundTypes';
+import { specialCardsDeck } from '../data/specialCards';
 
 interface GameSetupProps {
   onStart: (teamAName: string, teamBName: string, targetScore: number, activePackIds: string[], teamAPlayers: string[], teamBPlayers: string[]) => void;
@@ -47,14 +49,15 @@ export function GameSetup({ onStart }: GameSetupProps) {
           <label>Giocatori (separati da virgola)
             <input placeholder="Anna, Luca" value={teamAPlayers} onChange={(e) => setTeamAPlayers(e.target.value)} />
           </label>
-          <label>Giocatori (separati da virgola)
-            <input placeholder="Marta, Paolo" value={teamBPlayers} onChange={(e) => setTeamBPlayers(e.target.value)} />
-          </label>
+          
         </article>
         <article className="team-specials">
           <p className="label">Squadra B</p>
           <label>Nome squadra
             <input placeholder="Squadra B" value={teamBName} onChange={(e) => setTeamBName(e.target.value)} />
+          </label>
+          <label>Giocatori (separati da virgola)
+            <input placeholder="Marta, Paolo" value={teamBPlayers} onChange={(e) => setTeamBPlayers(e.target.value)} />
           </label>
         </article>
       </div>
@@ -91,6 +94,8 @@ export function GameSetup({ onStart }: GameSetupProps) {
           <summary>Riepilogo pacchetti</summary>
           <p className="muted tiny">Pacchetti attivi: {activePacks.map((pack) => pack.name).join(', ') || 'Nessuno'}</p>
           <p className="muted tiny">Totale categorie pescabili: {totalCategories}</p>
+          <p className="muted tiny">Contesti disponibili: {roundTypes.length}</p>
+          <p className="muted tiny">Carte jolly: {specialCardsDeck.filter((c) => c.cardType === 'jolly').length} · Carte aggravante: {specialCardsDeck.filter((c) => c.cardType === 'aggravante').length}</p>
           <p className="muted tiny">Pacchetti delicati attivati: {sensitivePacks.map((pack) => pack.name).join(', ') || 'Nessuno'}</p>
         </details>
       </section>

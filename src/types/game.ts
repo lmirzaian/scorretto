@@ -11,10 +11,13 @@ export interface CategoryPack { id: string; name: string; description: string; t
 export interface RoundType {
   id: string; name: string; kind: RoundKind; description: string; setupText: string;
   activePlayerInstruction: string; opponentInstruction: string; successCondition: string; failureCondition: string;
-  suggestedTimerSeconds: number; allowsInterruption: boolean; allowsDefense: boolean; allowsSteal: boolean;
+  suggestedTimerSeconds: number; allowsInterruption: boolean; allowsDefense: boolean; allowsSteal: boolean; weight: number;
 }
 
-export interface SpecialCard { id: string; name: string; description: string; pack: string; cardType: 'jolly' | 'aggravante'; }
+export interface SpecialCard {
+  id: string; name: string; description: string; effectText: string; timing: 'beforeRound' | 'duringRound' | 'afterRound' | 'judging';
+  pack: string; cardType: 'jolly' | 'aggravante'; maxUsesPerRound?: 1; bonusAvailable?: boolean; weight?: number;
+}
 export type TeamId = 'A' | 'B';
 
 export interface RoundLog {
@@ -31,4 +34,5 @@ export interface GameState {
   teamASpecialCards: SpecialCard[]; teamBSpecialCards: SpecialCard[];
   usedCardThisRoundA: string[]; usedCardThisRoundB: string[]; usedCardTypeA: boolean; usedCardTypeB: boolean;
   lastRoundWinner: TeamId | null; startingTeam: TeamId; gamePhase: GamePhase; roundPhase: RoundFlowPhase; roundHistory: RoundLog[];
+  lastCategoryId?: string; lastRoundTypeId?: string;
 }
