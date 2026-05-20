@@ -1,44 +1,86 @@
 # Non si può più dire niente
 
-## Sprint 5
+## Sprint 6
 
-Sprint 5 introduce un **motore round avanzato** con distinzione netta fra:
-- **Gioco Classico** (`kind: classic`)
-- **Round Contesto** (`kind: context`)
+Sprint 6 amplia in modo strutturato i contenuti mantenendo il gioco **offline, mobile-first, a squadre**.
 
-### Novità principali
-- Modello round type esteso (`description`, `setupText`, istruzioni attivo/avversario, condizioni, timer suggerito, flag interruzione/difesa/furto).
-- Macchina a stati round: `ready → extracted → performance → opponentIntervention → defense → judging → roundSummary` (con percorso ridotto per il classico).
-- UI round con: fase corrente, microcopy teatrale, istruzioni attore/avversario, avanzamento fase.
-- Sezione dedicata **Gioco Classico** con timer 10s e supporto alternanza al tavolo.
-- Sezione dedicata **Round Contesto** per i contesti: interrogazione, conferenza stampa, talk show, processo, riunione aziendale, tavolo tecnico istituzionale, cena di famiglia.
-- Ruolo squadra attiva esplicito e alternanza A/B ad ogni round.
-- Carte speciali durante il round: massimo 1 uso per squadra/round, scarto immediato e registrazione nello storico.
-- Distinzione carte: **Jolly** e **Aggravante**.
-- Giudizio del tavolo con: punto A/B, round nullo, bonus +1 A/B.
-- Storico round migliorato e collassabile con metadati completi del round.
-- Persistenza partita con `localStorage`.
+### Contenuti categoria
+Pacchetti presenti:
+- Province italiane
+- Religioni *(delicato, disattivato di default)*
+- Famiglia
+- Italia
+- Professioni
+- Vita sociale
 
-## Regole Sprint 5 (sintesi)
-- L’app guida i turni e il ritmo scenico.
-- Nessun backend, multiplayer online, login, pagamenti, database remoto.
-- Contenuti hardcoded non offensivi: la battuta resta responsabilità del tavolo.
+Ogni pacchetto definisce: `id`, `name`, `description`, `tone`, `enabledByDefault`, `warning?`, `categories[]`.
+Ogni categoria definisce: `id`, `label`, `packId`, `tags`, `sensitivity`, `notes?`.
 
-## Test manuale Sprint 5
-1. Avviare app.
-2. Creare o riprendere stanza offline.
-3. Inserire giocatori.
-4. Iniziare partita.
-5. Estrarre un round Gioco Classico.
-6. Verificare timer e pulsanti punto.
-7. Estrarre un round Contesto.
-8. Verificare fasi performance/intervento/difesa/giudizio.
-9. Usare una carta Jolly.
-10. Usare una carta Aggravante.
-11. Assegnare punto e bonus.
-12. Verificare storico round.
-13. Ricaricare pagina e verificare salvataggio.
-14. Arrivare alla vittoria finale.
+### Pacchetti delicati
+`Religioni` resta `tone: hot`, `enabledByDefault: false`, con warning esplicito sul consenso del tavolo.
+
+### Round / contesti
+- Gioco Classico
+- Interrogazione scolastica
+- Conferenza stampa
+- Talk show
+- Processo in tribunale
+- Riunione aziendale
+- Tavolo tecnico istituzionale
+- Cena di famiglia
+- Podcast motivazionale
+- Comizio politico
+- Riunione di condominio
+- Colloquio di lavoro
+- Terapia di coppia
+- Consiglio comunale
+- Aperitivo dopo il terzo spritz
+- Servizio del telegiornale
+- Documentario serio
+- Dibattito universitario
+- Telefonata con la mamma
+- Gruppo WhatsApp infuocato
+
+Ogni round type include anche `weight` per bilanciare l’estrazione.
+
+### Carte speciali
+Mazzo esteso con:
+- Jolly (es. Scaricabarile, Cambio contesto, Inversione dei ruoli, ecc.)
+- Aggravanti (es. Falla sembrare una statistica, Da post LinkedIn, Da slide ministeriale, ecc.)
+
+Ogni carta ora include metadati (`effectText`, `timing`) e `weight`.
+
+### Bilanciamento
+- Estrazione round type pesata (`Gioco Classico` più frequente).
+- Anti-ripetizione immediata categoria.
+- Anti-ripetizione immediata round type (eccetto classico).
+
+### UI setup / mazzi
+Nel setup è disponibile un riepilogo con:
+- pacchetti categorie e conteggio;
+- pacchetti attivi;
+- totale categorie pescabili;
+- contesti disponibili;
+- numero jolly;
+- numero aggravanti.
+
+## Test manuale Sprint 6
+1. Avvia app.
+2. Crea stanza offline.
+3. Attiva/disattiva pacchetti.
+4. Verifica totale categorie pescabili.
+5. Inizia partita.
+6. Estrai almeno 15 round.
+7. Verifica che il Gioco Classico esca spesso ma non sempre.
+8. Verifica comparsa contesti.
+9. Verifica anti-ripetizione categoria consecutiva.
+10. Usa jolly.
+11. Usa aggravanti.
+12. Assegna bonus aggravante.
+13. Controlla storico round.
+14. Ricarica e verifica localStorage.
+15. Arriva alla vittoria.
+16. Controlla regressioni.
 
 ## Avvio app
 ```bash
