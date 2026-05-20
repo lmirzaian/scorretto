@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { categoryPacks, defaultEnabledPackIds } from '../data/categoryPacks';
 
 interface GameSetupProps {
-  onStart: (teamAName: string, teamBName: string, targetScore: number, activePackIds: string[]) => void;
+  onStart: (teamAName: string, teamBName: string, targetScore: number, activePackIds: string[], teamAPlayers: string[], teamBPlayers: string[]) => void;
 }
 
 export function GameSetup({ onStart }: GameSetupProps) {
@@ -10,6 +10,8 @@ export function GameSetup({ onStart }: GameSetupProps) {
   const [teamBName, setTeamBName] = useState('');
   const [targetScore, setTargetScore] = useState(10);
   const [activePackIds, setActivePackIds] = useState<string[]>(defaultEnabledPackIds);
+  const [teamAPlayers, setTeamAPlayers] = useState('');
+  const [teamBPlayers, setTeamBPlayers] = useState('');
   const [error, setError] = useState('');
 
   const activePacks = useMemo(() => categoryPacks.filter((pack) => activePackIds.includes(pack.id)), [activePackIds]);
@@ -27,7 +29,9 @@ export function GameSetup({ onStart }: GameSetupProps) {
       return;
     }
 
-    onStart(teamAName.trim() || 'Squadra A', teamBName.trim() || 'Squadra B', Math.max(1, targetScore), activePackIds);
+    const aPlayers = teamAPlayers.split(',').map((p) => p.trim()).filter(Boolean);
+    const bPlayers = teamBPlayers.split(',').map((p) => p.trim()).filter(Boolean);
+    onStart(teamAName.trim() || 'Squadra A', teamBName.trim() || 'Squadra B', Math.max(1, targetScore), activePackIds, aPlayers.length ? aPlayers : ['Giocatore A1'], bPlayers.length ? bPlayers : ['Giocatore B1']);
   };
 
   return (
@@ -39,6 +43,12 @@ export function GameSetup({ onStart }: GameSetupProps) {
           <p className="label">Squadra A</p>
           <label>Nome squadra
             <input placeholder="Squadra A" value={teamAName} onChange={(e) => setTeamAName(e.target.value)} />
+          </label>
+          <label>Giocatori (separati da virgola)
+            <input placeholder="Anna, Luca" value={teamAPlayers} onChange={(e) => setTeamAPlayers(e.target.value)} />
+          </label>
+          <label>Giocatori (separati da virgola)
+            <input placeholder="Marta, Paolo" value={teamBPlayers} onChange={(e) => setTeamBPlayers(e.target.value)} />
           </label>
         </article>
         <article className="team-specials">
