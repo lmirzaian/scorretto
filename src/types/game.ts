@@ -12,6 +12,27 @@ export interface Category {
   pack: string;
 }
 
+export type CategorySensitivity = 'low' | 'medium' | 'high';
+
+export interface CategoryItem {
+  id: string;
+  label: string;
+  packId: string;
+  tags?: string[];
+  sensitivity?: CategorySensitivity;
+  notes?: string;
+}
+
+export interface CategoryPack {
+  id: string;
+  name: string;
+  description: string;
+  tone: 'light' | 'medium' | 'hot';
+  enabledByDefault: boolean;
+  warning?: string;
+  categories: CategoryItem[];
+}
+
 export interface RoundType {
   id: string;
   name: string;

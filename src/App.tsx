@@ -3,7 +3,7 @@ import './styles.css';
 import { GameSetup } from './components/GameSetup';
 import { GameScreen } from './components/GameScreen';
 import { VictoryScreen } from './components/VictoryScreen';
-import { categories } from './data/categories';
+import { getActiveCategories } from './data/categoryPacks';
 import { levels } from './data/levels';
 import { roundTypes } from './data/roundTypes';
 import { specialCardsDeck } from './data/specialCards';
@@ -19,6 +19,7 @@ const initialState: GameState = {
 export default function App() {
   const [state, setState] = useState<GameState>(initialState);
   const [timerKey, setTimerKey] = useState(0);
+  const [activePackIds, setActivePackIds] = useState<string[]>([]);
 
   const winnerName = useMemo(() => state.teamAScore >= state.targetScore ? state.teamAName : state.teamBScore >= state.targetScore ? state.teamBName : '', [state]);
 
@@ -48,11 +49,16 @@ export default function App() {
     return <section className="container"><article className="card hero"><p className="label">Verbale non ufficiale</p><h1>Non si può più dire niente</h1><p className="hero-sub">Il party game dei luoghi comuni, delle pessime difese e delle brutte compagnie.</p><p>Due squadre, un timer spietato, carte speciali e argomentazioni discutibili da improvvisare in pochi secondi.</p><button onClick={() => setState((p) => ({ ...p, gamePhase: 'setup' }))}>Nuova partita</button><p className="muted tiny">Giocare responsabilmente. Ridere non costituisce approvazione ufficiale.</p></article></section>;
   }
 
-  if (state.gamePhase === 'setup') return <section className="container"><GameSetup onStart={(a, b, target) => setState({ ...initialState, gamePhase: 'playing', teamAName: a, teamBName: b, targetScore: target })} /></section>;
-  if (state.gamePhase === 'victory') return <VictoryScreen winnerName={winnerName} teamAName={state.teamAName} teamBName={state.teamBName} teamAScore={state.teamAScore} teamBScore={state.teamBScore} rounds={state.currentRoundNumber} onRestart={() => setState(initialState)} />;
+  if (state.gamePhase === 'setup') return <section className="container"><GameSetup onStart={(a, b, target, packs) => { setActivePackIds(packs); setState({ ...initialState, gamePhase: 'playing', teamAName: a, teamBName: b, targetScore: target }); }} /></section>;
+  if (state.gamePhase === 'victory') return <VictoryScreen winnerName={winnerName} teamAName={state.teamAName} teamBName={state.teamBName} teamAScore={state.teamAScore} teamBScore={state.teamBScore} rounds={state.currentRoundNumber} onRestart={() => { setActivePackIds([]); setState(initialState); }} />;
 
   return <GameScreen {...state} teamACards={state.teamASpecialCards} teamBCards={state.teamBSpecialCards} timerKey={timerKey}
-    onDrawRound={() => { setState((prev) => ({ ...prev, currentLevel: pickRandom(levels), currentCategory: pickRandom(categories), currentRoundType: pickRandom(roundTypes) })); setTimerKey((k) => k + 1); }}
+    onDrawRound={() => {
+      const activeCategories = getActiveCategories(activePackIds);
+      if (activeCategories.length === 0) return;
+      setState((prev) => ({ ...prev, currentLevel: pickRandom(levels), currentCategory: pickRandom(activeCategories), currentRoundType: pickRandom(roundTypes) }));
+      setTimerKey((k) => k + 1);
+    }}
     onAssignPoint={assignPoint}
     onNullRound={() => { setState((prev) => ({ ...prev, currentLevel: null, currentCategory: null, currentRoundType: null })); setTimerKey((k) => k + 1); }}
     onNextRound={() => setState((prev) => ({ ...prev, currentRoundNumber: prev.currentRoundNumber + 1, startingTeam: prev.startingTeam === 'A' ? 'B' : 'A', currentLevel: null, currentCategory: null, currentRoundType: null, lastRoundWinner: null }))}
