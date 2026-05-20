@@ -13,20 +13,22 @@ export function SpecialCardsPanel({ teamAName, teamBName, teamACards, teamBCards
   return (
     <section className="card">
       <h3>Carte speciali</h3>
-      <div className="special-actions">
-        <button onClick={() => onDraw('A')}>Pesca carta speciale per {teamAName}</button>
-        <button onClick={() => onDraw('B')}>Pesca carta speciale per {teamBName}</button>
-      </div>
-      <div className="cards-grid">
+      <p className="muted">Carta speciale pescata: usala male. Limite massimo: 3 per squadra.</p>
+      <div className="cards-grid two-cols">
         {[{ name: teamAName, team: 'A' as TeamId, cards: teamACards }, { name: teamBName, team: 'B' as TeamId, cards: teamBCards }].map((slot) => (
-          <div key={slot.team}>
-            <p className="label">Carte speciali {slot.name} ({slot.cards.length}/3)</p>
+          <div className="team-specials" key={slot.team}>
+            <div className="team-specials-header">
+              <p className="label">{slot.name}</p>
+              <p>{slot.cards.length}/3</p>
+            </div>
+            <button className="secondary" onClick={() => onDraw(slot.team)}>Pesca per {slot.name}</button>
             {slot.cards.length === 0 ? <p className="muted">Nessuna carta.</p> : null}
             {slot.cards.map((card) => (
               <article className="special-card" key={`${slot.team}-${card.id}`}>
                 <strong>{card.name}</strong>
                 <p>{card.description}</p>
-                <button onClick={() => onDiscard(slot.team, card.id)}>Scarta</button>
+                <p className="muted">Effetto: {card.description}</p>
+                <button onClick={() => onDiscard(slot.team, card.id)}>Usa / Scarta</button>
               </article>
             ))}
           </div>
