@@ -45,3 +45,8 @@ input { width: 100%; margin-top: .4rem; margin-bottom: .7rem; padding: .8rem; ba
   .cards-grid { grid-template-columns: repeat(3, 1fr); }
   .two-cols { grid-template-columns: repeat(2, 1fr); }
 }
+
+.pack-section { margin-top: .8rem; }
+.pack-active { border-color: #ffe65c; }
+.warning-box { margin-top: .6rem; padding: .7rem; border-radius: 8px; border: 1px solid #866f26; background: #2a2410; color: #f4dfa0; }
+details summary { cursor: pointer; margin-top: .6rem; font-weight: 700; }

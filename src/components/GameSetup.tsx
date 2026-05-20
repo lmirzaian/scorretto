@@ -1,13 +1,34 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { categoryPacks, defaultEnabledPackIds } from '../data/categoryPacks';
 
 interface GameSetupProps {
-  onStart: (teamAName: string, teamBName: string, targetScore: number) => void;
+  onStart: (teamAName: string, teamBName: string, targetScore: number, activePackIds: string[]) => void;
 }
 
 export function GameSetup({ onStart }: GameSetupProps) {
   const [teamAName, setTeamAName] = useState('');
   const [teamBName, setTeamBName] = useState('');
   const [targetScore, setTargetScore] = useState(10);
+  const [activePackIds, setActivePackIds] = useState<string[]>(defaultEnabledPackIds);
+  const [error, setError] = useState('');
+
+  const activePacks = useMemo(() => categoryPacks.filter((pack) => activePackIds.includes(pack.id)), [activePackIds]);
+  const totalCategories = useMemo(() => activePacks.reduce((sum, pack) => sum + pack.categories.length, 0), [activePacks]);
+  const sensitivePacks = activePacks.filter((pack) => !!pack.warning);
+
+  const togglePack = (packId: string) => {
+    setError('');
+    setActivePackIds((prev) => (prev.includes(packId) ? prev.filter((id) => id !== packId) : [...prev, packId]));
+  };
+
+  const startGame = () => {
+    if (activePackIds.length === 0) {
+      setError('Seleziona almeno un pacchetto categorie.');
+      return;
+    }
+
+    onStart(teamAName.trim() || 'Squadra A', teamBName.trim() || 'Squadra B', Math.max(1, targetScore), activePackIds);
+  };
 
   return (
     <section className="card setup">
@@ -30,7 +51,42 @@ export function GameSetup({ onStart }: GameSetupProps) {
       <label>Punti per vincere
         <input type="number" min={3} max={30} value={targetScore} onChange={(e) => setTargetScore(Number(e.target.value))} />
       </label>
-      <button onClick={() => onStart(teamAName.trim() || 'Squadra A', teamBName.trim() || 'Squadra B', Math.max(1, targetScore))}>Inizia partita</button>
+
+      <section className="card pack-section">
+        <h3>Pacchetti categorie</h3>
+        <div className="cards-grid two-cols">
+          {categoryPacks.map((pack) => {
+            const active = activePackIds.includes(pack.id);
+            return (
+              <article key={pack.id} className={`team-specials ${active ? 'pack-active' : ''}`}>
+                <div className="team-specials-header">
+                  <p className="label">{pack.name}</p>
+                  <input type="checkbox" checked={active} onChange={() => togglePack(pack.id)} aria-label={`Attiva pacchetto ${pack.name}`} />
+                </div>
+                <p>{pack.description}</p>
+                <p className="muted tiny">Categorie: {pack.categories.length} · Tono: {pack.tone}</p>
+                {pack.warning ? <p className="danger tiny">{pack.warning}</p> : null}
+              </article>
+            );
+          })}
+        </div>
+
+        {sensitivePacks.length > 0 ? (
+          <div className="warning-box">
+            <strong>Patto del tavolo:</strong> questo pacchetto può essere delicato. Usatelo solo se tutti sono d’accordo.
+          </div>
+        ) : null}
+
+        <details>
+          <summary>Riepilogo pacchetti</summary>
+          <p className="muted tiny">Pacchetti attivi: {activePacks.map((pack) => pack.name).join(', ') || 'Nessuno'}</p>
+          <p className="muted tiny">Totale categorie pescabili: {totalCategories}</p>
+          <p className="muted tiny">Pacchetti delicati attivati: {sensitivePacks.map((pack) => pack.name).join(', ') || 'Nessuno'}</p>
+        </details>
+      </section>
+
+      {error ? <p className="danger">{error}</p> : null}
+      <button onClick={startGame}>Inizia partita</button>
     </section>
   );
 }
