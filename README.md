@@ -1,46 +1,47 @@
-# Non si può più dire niente — MVP
+# Non si può più dire niente
 
-Prototype mobile-first pass-and-play di un party game a squadre, pensato per una singola serata tra amici usando un solo telefono/tablet.
+Party game pass-and-play a squadre, pensato per serate tra amici: ironia, improvvisazione e round veloci.
 
-## Stack
-- React + TypeScript + Vite
-- CSS semplice (senza librerie UI pesanti)
-- Dati gioco separati in file TypeScript in `src/data`
+## Sprint 2: miglioramenti introdotti
 
-## Avvio locale
-```bash
-npm install
-npm run dev
-```
-Apri poi l'URL mostrato da Vite (di default `http://localhost:5173`).
+- Restyling completo mobile-first con atmosfera “verbale censurato / party game scorretto”.
+- Landing screen con titolo/sottotitolo, descrizione e disclaimer ironico.
+- Setup partita più leggibile con card separate per Squadra A e B.
+- Scoreboard scenografica con highlight della squadra in vantaggio.
+- Carte round più chiare e differenziazione visiva dei livelli (Aperitivo / Cena tra amici / Nessun testimone).
+- Timer migliorato con comandi Avvia, Pausa e Reset + stato urgente sotto i 4 secondi.
+- Pulsanti round/punti più grandi e chiari.
+- Pannello carte speciali separato per squadra, mini-card con effetto e azione “Usa / Scarta”.
+- Sezione “Fine round” con vincitore e call-to-action “Prossimo round”.
+- Schermata vittoria migliorata con messaggio ironico casuale.
 
-## Regole principali implementate
-1. **Home** con titolo, descrizione e pulsante “Nuova partita”.
-2. **Setup** con nomi squadra A/B e punteggio obiettivo (default 10).
-3. **Round screen** con:
-   - scoreboard,
-   - numero round,
-   - squadra che inizia,
-   - estrazione casuale di livello + categoria + tipo round,
-   - istruzioni specifiche del tipo round.
-4. **Timer 10 secondi** per supportare il ritmo del turno.
-5. **Assegnazione punto** a Squadra A/B o **Round nullo / ripeti**.
-6. **Carte speciali**:
-   - pesca manuale per entrambe le squadre,
-   - pesca automatica per la squadra perdente quando assegni un punto,
-   - massimo 3 carte per squadra,
-   - possibilità di scartare una carta usata.
-7. **Fine partita** quando una squadra raggiunge il target, con schermata vittoria e reset.
+## Avvio app
 
-## Struttura principale
-- `src/types/game.ts`: tipi e stato gioco.
-- `src/data/*`: livelli, categorie, tipi round, carte speciali (espandibili per future espansioni/pack).
-- `src/components/*`: componenti UI riutilizzabili.
-- `src/App.tsx`: orchestrazione stato globale e flussi di gioco.
+1. Installa dipendenze:
+   ```bash
+   npm install
+   ```
+2. Avvia in sviluppo:
+   ```bash
+   npm run dev
+   ```
+3. Build produzione:
+   ```bash
+   npm run build
+   ```
 
-## Sviluppi futuri suggeriti
-- Bilanciamento round types e gestione avanzata effetti carte.
-- Modalità multiplayer online e sincronizzazione stato.
-- Pacchetti/espansioni caricabili dinamicamente.
-- Storico partite, statistiche, timer per entrambi i giocatori.
-- Moderazione contenuti e “mood packs” configurabili.
+## Test manuale consigliato
+
+1. Avviare app.
+2. Creare partita (anche con campi nome vuoti per verificare fallback Squadra A/B).
+3. Estrarre round (livello/categoria/tipo).
+4. Usare timer (avvio, pausa, reset, countdown urgente).
+5. Assegnare punto a una squadra o fare round nullo.
+6. Verificare pesca/scarto carte speciali (limite max 3).
+7. Proseguire fino alla schermata vittoria.
+
+## Sprint 3 (idee)
+
+- Database strutturato di categorie, contesti, aggravanti e jolly.
+- Pacchetti tematici attivabili/disattivabili.
+- Bilanciamento statistico dei contenuti per evitare ripetizioni.
