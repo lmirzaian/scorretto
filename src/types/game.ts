@@ -1,4 +1,4 @@
-export type GamePhase = 'home' | 'setup' | 'playing' | 'victory';
+export type GamePhase = 'home' | 'setup' | 'playing' | 'victory' | 'testReport';
 export type RoundKind = 'classic' | 'context';
 export type RoundFlowPhase = 'ready' | 'extracted' | 'performance' | 'opponentIntervention' | 'defense' | 'judging' | 'roundSummary';
 
@@ -20,19 +20,35 @@ export interface SpecialCard {
 }
 export type TeamId = 'A' | 'B';
 
+export type RoundFeedback = {
+  roundNumber: number;
+  laughterScore?: 1 | 2 | 3 | 4 | 5;
+  categoryVerdict?: 'works' | 'weak' | 'edit' | 'remove';
+  roundTypeVerdict?: 'works' | 'confusing' | 'tooLong' | 'revise';
+  specialCardVerdict?: 'useful' | 'useless' | 'tooStrong' | 'unclear';
+  notes?: string;
+  createdAt: string;
+};
+
 export interface RoundLog {
   roundNumber: number; activeTeam: TeamId; activePlayer: string; opponentPlayer: string;
   level: string; category: string; categoryPack: string; roundType: string; kind: RoundKind;
   winner: TeamId | null; points: { A: number; B: number }; bonus: { A: number; B: number };
   usedCardsA: string[]; usedCardsB: string[]; finalPhase: RoundFlowPhase;
+  feedback?: RoundFeedback;
 }
 
 export interface GameState {
+  roomName: string;
+  testModeEnabled: boolean;
+  createdAt: string;
   teamAName: string; teamBName: string; teamAScore: number; teamBScore: number; targetScore: number;
   teamAPlayers: string[]; teamBPlayers: string[]; playerIndexA: number; playerIndexB: number;
   currentRoundNumber: number; currentLevel: Level | null; currentCategory: Category | null; currentRoundType: RoundType | null;
   teamASpecialCards: SpecialCard[]; teamBSpecialCards: SpecialCard[];
   usedCardThisRoundA: string[]; usedCardThisRoundB: string[]; usedCardTypeA: boolean; usedCardTypeB: boolean;
   lastRoundWinner: TeamId | null; startingTeam: TeamId; gamePhase: GamePhase; roundPhase: RoundFlowPhase; roundHistory: RoundLog[];
+  activePackIds: string[];
+  pendingFeedbackRound?: number | null;
   lastCategoryId?: string; lastRoundTypeId?: string;
 }
